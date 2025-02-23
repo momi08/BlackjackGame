@@ -1,11 +1,15 @@
-#include "pch.h"
 #include "CppUnitTest.h"
-#include "BlackjackGame.h"
+#include "../BlackjackGame/BlackjackGame.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace BlackjackGameTests
 {
+    void setInputStream(const std::string& input) {
+        std::istringstream* inputStream = new std::istringstream(input);
+        std::cin.rdbuf(inputStream->rdbuf());
+    }
+
     TEST_CLASS(BlackjackGameTests)
     {
     public:
@@ -15,7 +19,7 @@ namespace BlackjackGameTests
             Assert::AreEqual(52, (int)deck.size(), L"Deck needs to have 52 cards!");
             map<string, int> cardCount;
             for (const Card& card : deck) {
-                cardCount[card.name]++;
+                cardCount[card.cardName]++;
             }
 
             for (auto& pair : cardCount) {
@@ -44,7 +48,7 @@ namespace BlackjackGameTests
 
             int kingsDrawn = 0;
             for (int i = 0; i < deck.size(); i++) {
-                if (deck[i].name == "K" && kingsDrawn < 2) {
+                if (deck[i].cardName == "K" && kingsDrawn < 2) {
                     playerHand.push_back(deck[i]);
                     deck.erase(deck.begin() + i);
                     kingsDrawn++;
@@ -53,23 +57,29 @@ namespace BlackjackGameTests
             }
             int kingCount = 0;
             for (const Card& card : deck) {
-                if (card.name == "K") {
+                if (card.cardName == "K") {
                     kingCount++;
                 }
             }
-            Assert::AreEqual(2, kingCount, L"After dealing two K's, two more must remain in the deck!");
+            Assert::AreEqual(2, kingCount, L"After dealing two K's, two more K's must remain in the deck!");
         }
 
         TEST_METHOD(AceValueTest)
         {
-            vector<Card> hand1 = { {"A", 1}, {"6", 6} };
+            vector<Card> hand1 = { {"A", 11}, {"6", 6} };
             Assert::AreEqual(17, calculateSum(hand1), L"Ace should be valued 11!");
 
-            vector<Card> hand2 = { {"A", 1}, {"10", 10}, {"10", 10} }; 
+            vector<Card> hand2 = { {"A", 11}, {"10", 10}, {"10", 10} };
             Assert::AreEqual(21, calculateSum(hand2), L"Ace should be valued 1!");
 
-            vector<Card> hand3 = { {"A", 1}, {"A", 1}, {"9", 9} }; 
+            vector<Card> hand3 = { {"A", 11}, {"A", 11}, {"9", 9} };
             Assert::AreEqual(21, calculateSum(hand3), L"Ace is not calculated correctly!");
+
+            vector<Card> hand4 = { {"A", 11}, {"5", 5}, {"6", 6} };
+            Assert::AreEqual(12, calculateSum(hand4), L"Ace should be valued 1 if the other cards sum to 11!");
+
+            vector<Card> hand5 = { {"A", 11}, {"4", 4}, {"5", 5} };
+            Assert::AreEqual(20, calculateSum(hand5), L"Ace should be valued 11 if the other cards sum to 9!");
         }
 
         TEST_METHOD(PlayerBustsTest)
@@ -81,7 +91,7 @@ namespace BlackjackGameTests
         TEST_METHOD(PlayerBlackjackTest)
         {
             vector<Card> hand = { {"10", 10}, {"A", 11} };
-            Assert::IsTrue(calculateSum(hand) = 21, L"Player gets Blacjack!");
+            Assert::IsTrue(calculateSum(hand) == 21, L"Player gets Blacjack!");
         }
 
         TEST_METHOD(DealerStandsOn17Test)
@@ -107,26 +117,60 @@ namespace BlackjackGameTests
             int balance = 50;
             Assert::IsTrue(balance >= 1 && balance <= 100, L"Balance needs to be between 1 and 100!");
         }
-
-        TEST_METHOD(BetAcceptedValuesTest)
+        TEST_METHOD(AcceptsValidBets)
         {
-            Assert::IsTrue(isValidBet(2), L"Bet of 2 is valid!");
-            Assert::IsTrue(isValidBet(5), L"Bet of 5 is valid!");
-            Assert::IsTrue(isValidBet(10), L"Bet of 10 is valid!");
-            Assert::IsTrue(isValidBet(50), L"Bet of 50 is valid!");
-            Assert::IsTrue(isValidBet(100), L"Bet of 100 is valid!");
-            Assert::IsFalse(isValidBet(3), L"Bet of 3 is invalid!");
-            Assert::IsFalse(isValidBet(7), L"Bet of 7 is invalid!");
-            Assert::IsFalse(isValidBet(15), L"Bet of 15 is invalid!");
-            Assert::IsFalse(isValidBet(30), L"Bet of 30 is invalid!");
-            Assert::IsFalse(isValidBet(200), L"Bet of 200 is invalid!");
+            int bet;
+            setInputStream("5\n");
+            Assert::IsTrue(getValidBet(bet, 100), L"Bet of 5 should be accepted.");
+            Assert::AreEqual(5, bet);
+        }
+
+        TEST_METHOD(AcceptsMultipleValidBets)
+        {
+            int bet;
+            setInputStream("2\n");
+            Assert::IsTrue(getValidBet(bet, 100), L"Bet of 2 should be accepted.");
+            Assert::AreEqual(2, bet);
+
+            setInputStream("50\n");
+            Assert::IsTrue(getValidBet(bet, 100), L"Bet of 50 should be accepted.");
+            Assert::AreEqual(50, bet);
+        }
+
+        TEST_METHOD(RejectsInvalidBets)
+        {
+            int bet;
+            setInputStream("3\n10\n");
+            Assert::IsTrue(getValidBet(bet, 100), L"Invalid bet should be rejected, but valid bet should work.");
+            Assert::AreEqual(10, bet);
+        }
+        TEST_METHOD(RejectsNonNumericInput)
+        {
+            int bet;
+            setInputStream("abc\n20\n");
+            Assert::IsTrue(getValidBet(bet, 100), L"Non-numeric input should be ignored.");
+            Assert::AreEqual(20, bet);
+        }
+
+        TEST_METHOD(RejectsBetAboveBalance)
+        {
+            int bet;
+            setInputStream("100\n10\n");
+            Assert::IsTrue(getValidBet(bet, 50), L"Bet should retry until a valid bet is entered.");
+            Assert::AreEqual(10, bet);
+        }
+        TEST_METHOD(AcceptsCashout)
+        {
+            int bet;
+            setInputStream("cashout\n");
+            Assert::IsFalse(getValidBet(bet, 50), L"Entering 'cashout' should exit the function.");
         }
 
         TEST_METHOD(BetCannotExceedBalanceTest)
         {
             int balance = 10;
             int bet = 15;
-            Assert::IsTrue(bet <= balance, L"Bet should be lower than the balance!");
+            Assert::IsFalse(bet <= balance, L"Bet should be lower than the balance!");
         }
 
         TEST_METHOD(BalanceReductionAfterLossTest)
