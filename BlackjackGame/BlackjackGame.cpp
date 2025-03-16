@@ -8,22 +8,22 @@ void delay(int seconds) {
     std::this_thread::sleep_for(std::chrono::seconds(seconds));
 }
 
-vector<Card> createDeck() {
-    vector<Card> deck;
-    vector<string> names = { "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A" };
-    for (const string& name : names) {
+std::vector<Card> createDeck() {
+    std::vector<Card> deck;
+    std::vector<std::string> names = { "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A" };
+    for (const std::string& name : names) {
         for (int i = 0; i < 4; ++i) {
             int value = (name == "J" || name == "Q" || name == "K") ? 10 : (name == "A" ? 11 : stoi(name));
             deck.push_back({ name, value });
         }
     }
-    random_device rd;
-    default_random_engine rng(rd()); 
+    std::random_device rd;
+    std::default_random_engine rng(rd()); 
     shuffle(deck.begin(), deck.end(), rng); 
     return deck;
 }
 
-int calculateSum(const vector<Card>& hand) {
+int calculateSum(const std::vector<Card>& hand) {
     int sum = 0;
     int aceCount = 0;
     for (const Card& card : hand) {
@@ -47,50 +47,50 @@ int calculateSum(const vector<Card>& hand) {
 
 bool getValidBalance(int& balance) {
     while (true) {
-        cout << "Please input your starting balance: ";
-        if (cin >> balance && balance > 0) {
+        std::cout << "Please input your starting balance: ";
+        if (std::cin >> balance && balance > 0) {
             return true;
         }
         else {
-            cout << "Invalid input! Please enter a valid positive number for the balance." << endl;
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            std::cout << "Invalid input! Please enter a valid positive number for the balance." << std::endl;
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
     }
 }
 
 bool getValidBet(int& bet, int balance) {
-    string input;
+    std::string input;
     while (true) {
-        cout << "Enter your bet (1, 2, 5, 10, 20, 50, 100), or type 'cashout' to exit: ";
-        cin >> input;
+        std::cout << "Enter your bet (1, 2, 5, 10, 20, 50, 100), or type 'cashout' to exit: ";
+        std::cin >> input;
 
         if (input == "cashout") {
             return false;
         }
         try {
             bet = stoi(input);
-            vector<int> validBets = { 1, 2, 5, 10, 20, 50, 100 };
+            std::vector<int> validBets = { 1, 2, 5, 10, 20, 50, 100 };
             if (find(validBets.begin(), validBets.end(), bet) != validBets.end() && bet <= balance) {
                 return true;
             }
         }
         catch (...) {
         }
-        cout << "Invalid bet! Please enter a valid bet (1, 2, 5, 10, 20, 50, 100) or 'cashout'.\n";
-        cin.clear();
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        std::cout << "Invalid bet! Please enter a valid bet (1, 2, 5, 10, 20, 50, 100) or 'cashout'.\n";
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
 }
 
-void displayHand(const vector<Card>& hand) {
+void displayHand(const std::vector<Card>& hand) {
     for (const Card& card : hand) {
-        cout << card.cardName << " ";
+        std::cout << card.cardName << " ";
     }
-    cout << endl;
+    std::cout << std::endl;
 }
 
-void playerTurn(vector<Card>& playerHand, vector<Card>& deck) {
+void playerTurn(std::vector<Card>& playerHand, std::vector<Card>& deck) {
     while (true) {
         int sum = calculateSum(playerHand);
         displayHand(playerHand);
@@ -121,19 +121,19 @@ void playerTurn(vector<Card>& playerHand, vector<Card>& deck) {
     }
 }
 
-void dealerTurn(vector<Card>& dealerHand, vector<Card>& deck) {
+void dealerTurn(std::vector<Card>& dealerHand, std:: vector<Card>& deck) {
     while (calculateSum(dealerHand) < 17) {
         dealerHand.push_back(deck.back());
         deck.pop_back();
         displayHand(dealerHand);
         int sum = calculateSum(dealerHand);
-        cout << "Dealer's total: " << sum << endl;
+        std::cout << "Dealer's total: " << sum << std::endl;
         delay(1);
         if (sum > 21) {
-            cout << "Dealer busts! Over 21." << endl;
+            std::cout << "Dealer busts! Over 21." << std::endl;
             return;
         }
     }
-    cout << "Dealer stands at " << calculateSum(dealerHand) << endl;
+    std::cout << "Dealer stands at " << calculateSum(dealerHand) << std::endl;
     delay(1);
 }

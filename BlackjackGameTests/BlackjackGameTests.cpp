@@ -5,19 +5,15 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace BlackjackGameTests
 {
-    void setInputStream(const std::string& input) {
-        std::istringstream* inputStream = new std::istringstream(input);
-        std::cin.rdbuf(inputStream->rdbuf());
-    }
-
     TEST_CLASS(BlackjackGameTests)
     {
     public:
+        std::vector<Card> deck = createDeck();
         TEST_METHOD(DeckInitializationTest)
         {
-            vector<Card> deck = createDeck();
+            
             Assert::AreEqual(52, (int)deck.size(), L"Deck needs to have 52 cards!");
-            map<string, int> cardCount;
+            std::map<std::string, int> cardCount;
             for (const Card& card : deck) {
                 cardCount[card.cardName]++;
             }
@@ -29,9 +25,8 @@ namespace BlackjackGameTests
 
         TEST_METHOD(DeckDealingTest)
         {
-            vector<Card> deck = createDeck();
-            vector<Card> playerHand;
-            vector<Card> dealerHand;
+            std::vector<Card> playerHand;
+            std::vector<Card> dealerHand;
 
             playerHand.push_back(deck.back()); deck.pop_back();
             dealerHand.push_back(deck.back()); deck.pop_back();
@@ -43,8 +38,7 @@ namespace BlackjackGameTests
 
         TEST_METHOD(CardCountAfterDealingTest)
         {
-            vector<Card> deck = createDeck();
-            vector<Card> playerHand;
+            std::vector<Card> playerHand;
 
             int kingsDrawn = 0;
             for (int i = 0; i < deck.size(); i++) {
@@ -66,49 +60,49 @@ namespace BlackjackGameTests
 
         TEST_METHOD(AceValueTest)
         {
-            vector<Card> hand1 = { {"A", 11}, {"6", 6} };
+            std::vector<Card> hand1 = { {"A", 11}, {"6", 6} };
             Assert::AreEqual(17, calculateSum(hand1), L"Ace should be valued 11!");
 
-            vector<Card> hand2 = { {"A", 11}, {"10", 10}, {"10", 10} };
+            std::vector<Card> hand2 = { {"A", 11}, {"10", 10}, {"10", 10} };
             Assert::AreEqual(21, calculateSum(hand2), L"Ace should be valued 1!");
 
-            vector<Card> hand3 = { {"A", 11}, {"A", 11}, {"9", 9} };
+            std::vector<Card> hand3 = { {"A", 11}, {"A", 11}, {"9", 9} };
             Assert::AreEqual(21, calculateSum(hand3), L"Ace is not calculated correctly!");
 
-            vector<Card> hand4 = { {"A", 11}, {"5", 5}, {"6", 6} };
+            std::vector<Card> hand4 = { {"A", 11}, {"5", 5}, {"6", 6} };
             Assert::AreEqual(12, calculateSum(hand4), L"Ace should be valued 1 if the other cards sum to 11!");
 
-            vector<Card> hand5 = { {"A", 11}, {"4", 4}, {"5", 5} };
+            std::vector<Card> hand5 = { {"A", 11}, {"4", 4}, {"5", 5} };
             Assert::AreEqual(20, calculateSum(hand5), L"Ace should be valued 11 if the other cards sum to 9!");
         }
 
         TEST_METHOD(PlayerBustsTest)
         {
-            vector<Card> hand = { {"10", 10}, {"10", 10}, {"5", 5} };
+            std::vector<Card> hand = { {"10", 10}, {"10", 10}, {"5", 5} };
             Assert::IsTrue(calculateSum(hand) > 21, L"Player busts! (over 21)");
         }
 
         TEST_METHOD(PlayerBlackjackTest)
         {
-            vector<Card> hand = { {"10", 10}, {"A", 11} };
+            std::vector<Card> hand = { {"10", 10}, {"A", 11} };
             Assert::IsTrue(calculateSum(hand) == 21, L"Player gets Blacjack!");
         }
 
         TEST_METHOD(DealerStandsOn17Test)
         {
-            vector<Card> dealerHand = { {"10", 10}, {"7", 7} };
+            std::vector<Card> dealerHand = { {"10", 10}, {"7", 7} };
             Assert::AreEqual(17, calculateSum(dealerHand), L"Dealer is stopping at 17!");
         }
 
         TEST_METHOD(DealerStandsOnMoreThan17Test)
         {
-            vector<Card> dealerHand = { {"10", 10}, {"2", 2}, {"6", 6} };
+            std::vector<Card> dealerHand = { {"10", 10}, {"2", 2}, {"6", 6} };
             Assert::AreEqual(18, calculateSum(dealerHand), L"Dealer is stopping at 18!");
         }
 
         TEST_METHOD(DealerBustsTest)
         {
-            vector<Card> dealerHand = { {"10", 10}, {"2", 2}, {"K", 10} };
+            std::vector<Card> dealerHand = { {"10", 10}, {"2", 2}, {"K", 10} };
             Assert::AreEqual(22, calculateSum(dealerHand), L"Dealer busts! (over 21)");
         }
 
@@ -120,7 +114,7 @@ namespace BlackjackGameTests
         TEST_METHOD(AcceptsValidBets)
         {
             int bet;
-            setInputStream("5\n");
+            std::istringstream input("5\n");
             Assert::IsTrue(getValidBet(bet, 100), L"Bet of 5 should be accepted.");
             Assert::AreEqual(5, bet);
         }
@@ -128,11 +122,12 @@ namespace BlackjackGameTests
         TEST_METHOD(AcceptsMultipleValidBets)
         {
             int bet;
-            setInputStream("2\n");
+            std::istringstream input("2\n50\n");
+            std::cin.rdbuf(input.rdbuf());
+
             Assert::IsTrue(getValidBet(bet, 100), L"Bet of 2 should be accepted.");
             Assert::AreEqual(2, bet);
 
-            setInputStream("50\n");
             Assert::IsTrue(getValidBet(bet, 100), L"Bet of 50 should be accepted.");
             Assert::AreEqual(50, bet);
         }
@@ -140,14 +135,14 @@ namespace BlackjackGameTests
         TEST_METHOD(RejectsInvalidBets)
         {
             int bet;
-            setInputStream("3\n10\n");
+            std::istringstream input("3\n10\n");
             Assert::IsTrue(getValidBet(bet, 100), L"Invalid bet should be rejected, but valid bet should work.");
             Assert::AreEqual(10, bet);
         }
         TEST_METHOD(RejectsNonNumericInput)
         {
             int bet;
-            setInputStream("abc\n20\n");
+            std::istringstream input("abc\n20\n");
             Assert::IsTrue(getValidBet(bet, 100), L"Non-numeric input should be ignored.");
             Assert::AreEqual(20, bet);
         }
@@ -155,14 +150,18 @@ namespace BlackjackGameTests
         TEST_METHOD(RejectsBetAboveBalance)
         {
             int bet;
-            setInputStream("100\n10\n");
+            
+            std::istringstream input("100\n10\n");
+            std::cin.rdbuf(input.rdbuf());
+
             Assert::IsTrue(getValidBet(bet, 50), L"Bet should retry until a valid bet is entered.");
             Assert::AreEqual(10, bet);
         }
         TEST_METHOD(AcceptsCashout)
         {
             int bet;
-            setInputStream("cashout\n");
+            std::istringstream input("cashout\n");
+            std::cin.rdbuf(input.rdbuf());
             Assert::IsFalse(getValidBet(bet, 50), L"Entering 'cashout' should exit the function.");
         }
 

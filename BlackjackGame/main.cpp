@@ -17,9 +17,9 @@ int main() {
         }
         balance -= bet;
 
-        vector<Card> deck = createDeck();
-        vector<Card> playerHand;
-        vector<Card> dealerHand;
+        std::vector<Card> deck = createDeck();
+        std::vector<Card> playerHand;
+        std::vector<Card> dealerHand;
 
         playerHand.push_back(deck.back()); deck.pop_back();
         dealerHand.push_back(deck.back()); deck.pop_back();

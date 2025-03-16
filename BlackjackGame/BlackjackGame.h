@@ -1,4 +1,3 @@
-#define BLACKJACK_H
 #pragma once
 #include <vector>
 #include <map>
@@ -7,18 +6,15 @@
 #include <iostream>
 #include <limits>
 
-using namespace std;
-
 struct Card {
-    string cardName;
+    std::string cardName;
     int cardValue;
 };
 
-vector<Card> createDeck();
-int calculateSum(const vector<Card>& hand);
+std::vector<Card> createDeck();
+int calculateSum(const std::vector<Card>& hand);
 bool getValidBet(int& bet, int balance);
 bool getValidBalance(int& balance);
-void displayHand(const vector<Card>& hand);
-void playerTurn(vector<Card>& playerHand, vector<Card>& deck);
-void dealerTurn(vector<Card>& dealerHand, vector<Card>& deck);
-
+void displayHand(const std::vector<Card>& hand);
+void playerTurn(std::vector<Card>& playerHand, std::vector<Card>& deck);
+void dealerTurn(std::vector<Card>& dealerHand, std::vector<Card>& deck);
