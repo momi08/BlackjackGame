@@ -9,6 +9,8 @@ namespace BlackjackGameTests
     {
     public:
         std::vector<Card> deck = createDeck();
+        int bet;
+
         TEST_METHOD(DeckInitializationTest)
         {
             
@@ -111,58 +113,50 @@ namespace BlackjackGameTests
             int balance = 50;
             Assert::IsTrue(balance >= 1 && balance <= 100, L"Balance needs to be between 1 and 100!");
         }
+
         TEST_METHOD(AcceptsValidBets)
         {
-            int bet;
-            std::istringstream input("5\n");
-            Assert::IsTrue(getValidBet(bet, 100), L"Bet of 5 should be accepted.");
+            std::stringstream input("5\n");
+            Assert::IsTrue(getValidBet(input, bet, 100), L"Bet of 5 should be accepted.");
             Assert::AreEqual(5, bet);
         }
 
         TEST_METHOD(AcceptsMultipleValidBets)
         {
-            int bet;
-            std::istringstream input("2\n50\n");
-            std::cin.rdbuf(input.rdbuf());
+            std::stringstream input("2\n50\n");
 
-            Assert::IsTrue(getValidBet(bet, 100), L"Bet of 2 should be accepted.");
+            Assert::IsTrue(getValidBet(input, bet, 100), L"Bet of 2 should be accepted.");
             Assert::AreEqual(2, bet);
 
-            Assert::IsTrue(getValidBet(bet, 100), L"Bet of 50 should be accepted.");
+            Assert::IsTrue(getValidBet(input, bet, 100), L"Bet of 50 should be accepted.");
             Assert::AreEqual(50, bet);
         }
 
         TEST_METHOD(RejectsInvalidBets)
         {
-            int bet;
-            std::istringstream input("3\n10\n");
-            Assert::IsTrue(getValidBet(bet, 100), L"Invalid bet should be rejected, but valid bet should work.");
+            std::stringstream input("3\n10\n");
+            Assert::IsTrue(getValidBet(input, bet, 100), L"Invalid bet should be rejected, but valid bet should work.");
             Assert::AreEqual(10, bet);
         }
+
         TEST_METHOD(RejectsNonNumericInput)
         {
-            int bet;
-            std::istringstream input("abc\n20\n");
-            Assert::IsTrue(getValidBet(bet, 100), L"Non-numeric input should be ignored.");
+            std::stringstream input("abc\n20\n");
+            Assert::IsTrue(getValidBet(input, bet, 100), L"Non-numeric input should be ignored.");
             Assert::AreEqual(20, bet);
         }
 
         TEST_METHOD(RejectsBetAboveBalance)
         {
-            int bet;
-            
-            std::istringstream input("100\n10\n");
-            std::cin.rdbuf(input.rdbuf());
-
-            Assert::IsTrue(getValidBet(bet, 50), L"Bet should retry until a valid bet is entered.");
+            std::stringstream input("100\n10\n");
+            Assert::IsTrue(getValidBet(input, bet, 50), L"Bet should retry until a valid bet is entered.");
             Assert::AreEqual(10, bet);
         }
+
         TEST_METHOD(AcceptsCashout)
         {
-            int bet;
-            std::istringstream input("cashout\n");
-            std::cin.rdbuf(input.rdbuf());
-            Assert::IsFalse(getValidBet(bet, 50), L"Entering 'cashout' should exit the function.");
+            std::stringstream input("cashout\n");
+            Assert::IsFalse(getValidBet(input, bet, 50), L"Entering 'cashout' should exit the function.");
         }
 
         TEST_METHOD(BetCannotExceedBalanceTest)

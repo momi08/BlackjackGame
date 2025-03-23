@@ -45,41 +45,41 @@ int calculateSum(const std::vector<Card>& hand) {
     return sum;
 }
 
-bool getValidBalance(int& balance) {
+bool getValidBalance(std::istream& is, int& balance) {
     while (true) {
         std::cout << "Please input your starting balance: ";
-        if (std::cin >> balance && balance > 0) {
+        if (is >> balance && balance > 0) {
             return true;
         }
         else {
             std::cout << "Invalid input! Please enter a valid positive number for the balance." << std::endl;
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            is.clear();
+            is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
     }
 }
 
-bool getValidBet(int& bet, int balance) {
+bool getValidBet(std::istream& is, int& bet, int balance) {
     std::string input;
     while (true) {
         std::cout << "Enter your bet (1, 2, 5, 10, 20, 50, 100), or type 'cashout' to exit: ";
-        std::cin >> input;
+        is >> input;
 
         if (input == "cashout") {
             return false;
         }
         try {
-            bet = stoi(input);
+            bet = std::stoi(input);
             std::vector<int> validBets = { 1, 2, 5, 10, 20, 50, 100 };
-            if (find(validBets.begin(), validBets.end(), bet) != validBets.end() && bet <= balance) {
+            if (std::find(validBets.begin(), validBets.end(), bet) != validBets.end() && bet <= balance) {
                 return true;
             }
         }
         catch (...) {
         }
         std::cout << "Invalid bet! Please enter a valid bet (1, 2, 5, 10, 20, 50, 100) or 'cashout'.\n";
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        is.clear();
+        is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
 }
 

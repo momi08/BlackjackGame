@@ -13,8 +13,8 @@ struct Card {
 
 std::vector<Card> createDeck();
 int calculateSum(const std::vector<Card>& hand);
-bool getValidBet(int& bet, int balance);
-bool getValidBalance(int& balance);
+bool getValidBet(std::istream& is, int& bet, int balance);
+bool getValidBalance(std::istream& is, int& balance);
 void displayHand(const std::vector<Card>& hand);
 void playerTurn(std::vector<Card>& playerHand, std::vector<Card>& deck);
 void dealerTurn(std::vector<Card>& dealerHand, std::vector<Card>& deck);

@@ -5,12 +5,12 @@ int main() {
     int bet = 0;
 
     std::cout << "Starting a game of Blackjack!" << std::endl;
-    if (!getValidBalance(balance)) {
+    if (!getValidBalance(std::cin, balance)) {
         return 0;
     }
     std::cout << "Your starting balance: " << balance << std::endl;
     while (balance >= 1) {
-        if (!getValidBet(bet, balance)) {
+        if (!getValidBet(std::cin, bet, balance)) {
             std::cout << "You cashed out with a balance of: " << balance << std::endl;
             std::cout << "Exiting the game..." << std::endl;
             break;
