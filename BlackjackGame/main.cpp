@@ -28,11 +28,9 @@ int main() {
         playerHand.push_back(deck.back()); deck.pop_back();
         dealerHand.push_back(deck.back()); deck.pop_back();
 
-        std::cout << "Your hand: ";
-        displayHand(playerHand, true);
+        std::cout << "Your hand: " << displayHand(playerHand, true) << std::endl;
         std::cout << "Your hand total: " << calculateSum(playerHand) << std::endl;
-        std::cout << "Dealer's visible card: ";
-        displayHand(dealerHand, false);
+        std::cout << "Dealer's visible card: " << displayHand(dealerHand, false) << std::endl;
         std::cout << "Dealer's hand total: " << cardValue(dealerHand[0]) << std::endl;
 
         int playerSum = calculateSum(playerHand);
@@ -65,7 +63,7 @@ int main() {
             if (choice == 'h' || choice == 'H') {
                 playerHand.push_back(deck.back());
                 deck.pop_back();      
-                displayHand(playerHand, true); 
+                std::cout << displayHand(playerHand, true) << std::endl;
                 playerSum = calculateSum(playerHand);
                 std::cout << "Your hand total: " << playerSum << std::endl;
 
@@ -93,8 +91,8 @@ int main() {
         }
 
 		std::cout << "Dealer's turn..\n";
-        std::cout << "Dealer's hand: \n";
         dealerTurn(dealerHand, deck);
+        std::cout << "Dealer's hand: " << displayHand(dealerHand, true) << std::endl;
         int dealerSum = calculateSum(dealerHand);
 
         playerSum = calculateSum(playerHand);
@@ -105,7 +103,11 @@ int main() {
         if (playerSum > 21) {
             std::cout << "You busted! You lose your bet.\n";
         }
-        else if (dealerSum > 21 || playerSum > dealerSum) {
+		else if (dealerSum > 21) {
+			std::cout << "Dealer busted, you win! You gain your bet.\n";
+			balance += bet * 2;
+		}
+        else if (playerSum > dealerSum) {
             std::cout << "You win! You gain your bet.\n";
             balance += bet * 2;
         }

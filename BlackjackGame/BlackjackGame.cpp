@@ -1,12 +1,7 @@
 #include "BlackjackGame.h"
 #include <random>
-#include <chrono>
-#include <thread>
 #include <sstream>
-
-void delay(int seconds) {
-    std::this_thread::sleep_for(std::chrono::seconds(seconds));
-}
+#include <array>
 
 std::vector<Card> createDeck() {
     std::vector<Card> deck;
@@ -49,66 +44,35 @@ int calculateSum(const std::vector<Card>& hand) {
     return sum;
 }
 
-void displayHand(const std::vector<Card>& hand, bool showAll) {
+std::string cardToString(const Card& card) {
+    static const std::array<std::string, 13> rankNames = {
+        "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"
+    };
+
+    static const std::array<std::string, 4> suitNames = {
+        "Hearts", "Diamonds", "Clubs", "Spades"
+    };
+
+    return rankNames[static_cast<int>(card.rank) - 2] + " of " + suitNames[static_cast<int>(card.suit)];
+}
+
+std::string displayHand(const std::vector<Card>& hand, bool showAll) {
+    std::ostringstream output;
+
     if (showAll) {
         for (const Card& card : hand) {
-            std::string rankStr;
-            switch (card.rank) {
-            case Rank::Two: rankStr = "2"; break;
-            case Rank::Three: rankStr = "3"; break;
-            case Rank::Four: rankStr = "4"; break;
-            case Rank::Five: rankStr = "5"; break;
-            case Rank::Six: rankStr = "6"; break;
-            case Rank::Seven: rankStr = "7"; break;
-            case Rank::Eight: rankStr = "8"; break;
-            case Rank::Nine: rankStr = "9"; break;
-            case Rank::Ten: rankStr = "10"; break;
-            case Rank::Jack: rankStr = "J"; break;
-            case Rank::Queen: rankStr = "Q"; break;
-            case Rank::King: rankStr = "K"; break;
-            case Rank::Ace: rankStr = "A"; break;
-            }
-            std::string suitStr;
-            switch (card.suit) {
-            case Suit::Hearts: suitStr = "Hearts"; break;
-            case Suit::Diamonds: suitStr = "Diamonds"; break;
-            case Suit::Clubs: suitStr = "Clubs"; break;
-            case Suit::Spades: suitStr = "Spades"; break;
-            }
-            std::cout << rankStr << " of " << suitStr << "  ";
+            output << cardToString(card) << "  ";
         }
     }
     else {
         if (!hand.empty()) {
-            const Card& card = hand[0];
-            std::string rankStr;
-            switch (card.rank) {
-            case Rank::Two: rankStr = "2"; break;
-            case Rank::Three: rankStr = "3"; break;
-            case Rank::Four: rankStr = "4"; break;
-            case Rank::Five: rankStr = "5"; break;
-            case Rank::Six: rankStr = "6"; break;
-            case Rank::Seven: rankStr = "7"; break;
-            case Rank::Eight: rankStr = "8"; break;
-            case Rank::Nine: rankStr = "9"; break;
-            case Rank::Ten: rankStr = "10"; break;
-            case Rank::Jack: rankStr = "J"; break;
-            case Rank::Queen: rankStr = "Q"; break;
-            case Rank::King: rankStr = "K"; break;
-            case Rank::Ace: rankStr = "A"; break;
-            }
-            std::string suitStr;
-            switch (card.suit) {
-            case Suit::Hearts: suitStr = "Hearts"; break;
-            case Suit::Diamonds: suitStr = "Diamonds"; break;
-            case Suit::Clubs: suitStr = "Clubs"; break;
-            case Suit::Spades: suitStr = "Spades"; break;
-            }
-            std::cout << rankStr << " of " << suitStr << "  ";
+            output << cardToString(hand[0]);
         }
     }
-    std::cout << std::endl;
+
+    return output.str();
 }
+
 
 bool getValidBalance(std::istream& is, int& balance) {
     return (is >> balance && balance > 0);
@@ -133,13 +97,13 @@ bool getBet(std::istream& is, int& bet, int balance) {
     }
 }
 
-bool playerTurn(std::vector<Card>& playerHand, std::vector<Card>& deck) {
+bool playerTurn(std::vector<Card>& playerHand, std::vector<Card>& deck, std::istream& input) {
     while (true) {
         int sum = calculateSum(playerHand);
-        if (sum >= 21) return (sum == 21); 
+        if (sum >= 21) return (sum == 21);
 
         char choice;
-        std::cin >> choice;
+        input >> choice;
         if (choice == 'h' || choice == 'H') {
             playerHand.push_back(deck.back());
             deck.pop_back();
@@ -155,6 +119,5 @@ bool dealerTurn(std::vector<Card>& dealerHand, std::vector<Card>& deck) {
         dealerHand.push_back(deck.back());
         deck.pop_back();
     }
-    displayHand(dealerHand, true);
     return (calculateSum(dealerHand) > 21);
 }

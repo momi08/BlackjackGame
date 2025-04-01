@@ -1,10 +1,6 @@
 #pragma once
 #include <vector>
-#include <map>
-#include <string>
-#include <algorithm>
 #include <iostream>
-#include <limits>
 
 enum class Suit { Hearts, Diamonds, Clubs, Spades };
 enum class Rank {
@@ -24,6 +20,7 @@ int calculateSum(const std::vector<Card>& hand);
 bool getBet(std::istream& is, int& bet, int balance);
 bool validateBet(int bet, int balance);
 bool getValidBalance(std::istream& is, int& balance);
-void displayHand(const std::vector<Card>& hand, bool showAll);
-bool playerTurn(std::vector<Card>& playerHand, std::vector<Card>& deck);
+std::string displayHand(const std::vector<Card>& hand, bool showAll);
+std::string cardToString(const Card& card);
+bool playerTurn(std::vector<Card>& playerHand, std::vector<Card>& deck, std::istream& input);
 bool dealerTurn(std::vector<Card>& dealerHand, std::vector<Card>& deck);
