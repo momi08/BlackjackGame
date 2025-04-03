@@ -103,8 +103,8 @@ namespace BlackjackGameTests
         TEST_METHOD(DisplayHandTest) {
             std::vector<Card> hand = { Card(Rank::Ace, Suit::Spades), Card(Rank::Queen, Suit::Diamonds) };
 
-            Assert::AreEqual(std::string("A♠ Q♦"), displayHand(hand, true));
-            Assert::AreEqual(std::string("A♠"), displayHand(hand, false));
+            Assert::AreEqual(std::string("A\xe2\x99\xa0 Q\xe2\x99\xa6"), displayHand(hand, true));
+            Assert::AreEqual(std::string("A\xe2\x99\xa0"), displayHand(hand, false));
         }
 
         TEST_METHOD(PlayerTurnTest) {
