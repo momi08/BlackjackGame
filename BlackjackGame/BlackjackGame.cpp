@@ -1,4 +1,4 @@
-#include "BlackjackGame.h"
+﻿#include "BlackjackGame.h"
 #include <random>
 #include <sstream>
 #include <array>
@@ -48,20 +48,23 @@ std::string cardToString(const Card& card) {
     static const std::array<std::string, 13> rankNames = {
         "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"
     };
-
-    static const std::array<std::string, 4> suitNames = {
-        "Hearts", "Diamonds", "Clubs", "Spades"
+    static const std::array<std::string, 4> suitSymbols = {
+        "♥",
+        "♦",
+        "♣",
+        "♠"
     };
-
-    return rankNames[static_cast<int>(card.rank) - 2] + " of " + suitNames[static_cast<int>(card.suit)];
+    return rankNames[static_cast<int>(card.rank) - 2] + suitSymbols[static_cast<int>(card.suit)];
 }
 
 std::string displayHand(const std::vector<Card>& hand, bool showAll) {
     std::ostringstream output;
-
     if (showAll) {
-        for (const Card& card : hand) {
-            output << cardToString(card) << "  ";
+        for (size_t i = 0; i < hand.size(); ++i) {
+            output << cardToString(hand[i]);
+            if (i != hand.size() - 1) {
+                output << " ";
+            }
         }
     }
     else {
@@ -69,7 +72,6 @@ std::string displayHand(const std::vector<Card>& hand, bool showAll) {
             output << cardToString(hand[0]);
         }
     }
-
     return output.str();
 }
 

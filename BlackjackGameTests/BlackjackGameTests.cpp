@@ -1,4 +1,4 @@
-#include <map>
+﻿#include <map>
 #include "CppUnitTest.h"
 #include "../BlackjackGame/BlackjackGame.h"
 
@@ -103,9 +103,9 @@ namespace BlackjackGameTests
         TEST_METHOD(DisplayHandTest) {
             std::vector<Card> hand = { Card(Rank::Ace, Suit::Spades), Card(Rank::Queen, Suit::Diamonds) };
 
-            Assert::AreEqual(std::string("A of Spades  Q of Diamonds  "), displayHand(hand, true));
-            Assert::AreEqual(std::string("A of Spades"), displayHand(hand, false));
-}
+            Assert::AreEqual(std::string("A♠ Q♦"), displayHand(hand, true));
+            Assert::AreEqual(std::string("A♠"), displayHand(hand, false));
+        }
 
         TEST_METHOD(PlayerTurnTest) {
             std::vector<Card> deck = {

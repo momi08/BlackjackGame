@@ -1,23 +1,52 @@
-#include "BlackjackGame.h"
+﻿#include "BlackjackGame.h"
+#include <string>
+#include <windows.h>
 
 void startGame(int& balance) {
-	std::cout << "Starting a game of Blackjack!" << std::endl;
-	std::cout << "Please input your starting balance :" << std::endl;
-	if (!getValidBalance(std::cin, balance)) {
-		return;
-	}
-	std::cout << "Your starting balance: " << balance << std::endl;
+    std::cout << "Starting a game of Blackjack!" << std::endl;
+
+    while (true) {
+        std::cout << "Please input your starting balance: ";
+        std::cin >> balance;
+        if (std::cin.fail() || balance < 1) {
+            std::cin.clear();
+            std::cout << "Invalid input. Please enter a positive number (minimum 1): " << std::endl;
+        }
+        else {
+            break;
+        }
+    }
+    std::cout << "Your starting balance: " << balance << std::endl;
 }
 
 bool placeBet(int& balance, int& bet) {
-	std::cout << "Enter your bet (1, 2, 5, 10, 20, 50, 100), or type 'cashout' to exit: ";
-	if (!getBet(std::cin, bet, balance)) {
-		std::cout << "You cashed out with a balance of: " << balance << std::endl;
-		std::cout << "Exiting the game..." << std::endl;
-        return false;
-	}
-	balance -= bet;
-	return true;
+    std::cout << "Enter your bet (1, 2, 5, 10, 20, 50, 100), or type 'cashout' to exit: ";
+    std::string input;
+    while (true) {
+        std::cin >> input;
+        if (input == "cashout") {
+            std::cout << "You cashed out with a balance of: " << balance << std::endl;
+            std::cout << "Exiting the game..." << std::endl;
+            return false;
+        }
+        try {
+            bet = std::stoi(input);
+        }
+        catch (...) {
+            std::cout << "Invalid input. Please enter a valid bet amount: ";
+            continue;
+        }
+        if (bet > balance) {
+            std::cout << "You cannot bet more than your balance! Enter a new bet: ";
+        }
+        else if (bet <= 0 || (bet != 1 && bet != 2 && bet != 5 && bet != 10 && bet != 20 && bet != 50 && bet != 100)) {
+            std::cout << "Invalid bet amount. Please enter one of (1, 2, 5, 10, 20, 50, 100): ";
+        }
+        else {
+            balance -= bet;
+            return true;
+        }
+    }
 }
 
 void dealCards(std::vector<Card>& deck, std::vector<Card>& playerHand, std::vector<Card>& dealerHand) {
@@ -34,10 +63,10 @@ void dealCards(std::vector<Card>& deck, std::vector<Card>& playerHand, std::vect
 bool playerTurn(std::vector<Card>& playerHand, std::vector<Card>& deck) {
     while (true) {
         std::cout << "Would you like to 'hit' (h) or 'stand' (s)? ";
-        char choice;
+        std::string choice;
         std::cin >> choice;
 
-        if (choice == 'h' || choice == 'H') {
+        if (choice == "h" || choice == "H") {
             playerHand.push_back(deck.back());
             deck.pop_back();
             std::cout << "Your hand: " << displayHand(playerHand, true) << std::endl;
@@ -48,7 +77,7 @@ bool playerTurn(std::vector<Card>& playerHand, std::vector<Card>& deck) {
                 return false;
             }
         }
-        else if (choice == 's' || choice == 'S') {
+        else if (choice == "s" || choice == "S") {
             return true;
         }
         else {
@@ -61,7 +90,6 @@ void gameResult(int playerSum, int dealerSum, int bet, int& balance) {
     std::cout << "Final scores:\n";
     std::cout << "Player: " << playerSum << std::endl;
     std::cout << "Dealer: " << dealerSum << std::endl;
-
     if (dealerSum > 21) {
         std::cout << "Dealer busted! You win!\n";
         balance += bet * 2;
@@ -84,12 +112,12 @@ void gameResult(int playerSum, int dealerSum, int bet, int& balance) {
 }
 
 int main() {
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
     int balance = 0, bet = 0;
     startGame(balance);
-
     while (balance >= 1) {
         if (!placeBet(balance, bet)) break;
-
         std::vector<Card> deck = createDeck();
         std::vector<Card> playerHand, dealerHand;
 
@@ -104,9 +132,13 @@ int main() {
         }
 
         if (!playerTurn(playerHand, deck)) {
+            std::cout << "Your new balance: " << balance << std::endl;
+            if (balance < 1) {
+                std::cout << "You have no money left. Game over!" << std::endl;
+                break;
+            }
             continue;
         }
-
         std::cout << "Dealer's turn..\n";
         dealerTurn(dealerHand, deck);
         std::cout << "Dealer's hand: " << displayHand(dealerHand, true) << std::endl;
