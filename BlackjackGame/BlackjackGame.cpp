@@ -1,4 +1,4 @@
-﻿#include "BlackjackGame.h"
+#include "BlackjackGame.h"
 #include <random>
 #include <sstream>
 #include <array>
@@ -49,10 +49,10 @@ std::string cardToString(const Card& card) {
         "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"
     };
     static const std::array<std::string, 4> suitSymbols = {
-        "♥",
-        "♦",
-        "♣",
-        "♠"
+        "\xE2\x99\xA5",
+        "\xE2\x99\xA6",
+        "\xE2\x99\xA3",
+        "\xE2\x99\xA0"
     };
     return rankNames[static_cast<int>(card.rank) - 2] + suitSymbols[static_cast<int>(card.suit)];
 }
