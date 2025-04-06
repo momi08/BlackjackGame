@@ -1,6 +1,7 @@
 ﻿#include "BlackjackGame.h"
 #include <string>
-#include <windows.h>
+#define NOMINMAX
+#include <Windows.h>
 
 void startGame(int& balance) {
     std::cout << "Starting a game of Blackjack!" << std::endl;
@@ -10,6 +11,7 @@ void startGame(int& balance) {
         std::cin >> balance;
         if (std::cin.fail() || balance < 1) {
             std::cin.clear();
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             std::cout << "Invalid input. Please enter a positive number (minimum 1): " << std::endl;
         }
         else {
@@ -112,8 +114,7 @@ void gameResult(int playerSum, int dealerSum, int bet, int& balance) {
 }
 
 int main() {
-    SetConsoleOutputCP(CP_UTF8);
-    SetConsoleCP(CP_UTF8);
+	SetConsoleOutputCP(CP_UTF8);
     int balance = 0, bet = 0;
     startGame(balance);
     while (balance >= 1) {
