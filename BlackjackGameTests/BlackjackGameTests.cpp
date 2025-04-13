@@ -10,7 +10,7 @@ namespace BlackjackGameTests
     {
         TEST_METHOD(DeckInitializationTest) {
             std::vector<Card> deck = createDeck();
-            Assert::AreEqual(52ull, deck.size());
+            Assert::AreEqual(size_t(52), deck.size());
 
             std::map<Rank, int> rankCount;
             for (const Card& card : deck) {
